@@ -34,10 +34,10 @@ struct BirdsListModel {
 
 extension BirdsListModel: Hashable {
     static func == (lhs: BirdsListModel, rhs: BirdsListModel) -> Bool {
-        lhs.index == rhs.index
+        lhs.uid == rhs.uid
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(index)
+        hasher.combine(uid)
     }
 }

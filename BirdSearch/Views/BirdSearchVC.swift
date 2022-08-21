@@ -105,7 +105,6 @@ private extension BirdSearchVC {
             strongCell.setBirdCell(birdModel: bird)
             return strongCell
         })
-        collectionView.dataSource = dataSource
     }
     
 }
@@ -124,6 +123,9 @@ extension BirdSearchVC : UISearchBarDelegate, UISearchResultsUpdating {
         }
         guard filteredBirds.count != 0 else {
             self.showAlertOnMainThread(title: "OOPS!!!", message: "No bird named \(filter) was found, try again")
+            self.dataSource?.refresh(completion: { [weak self] in
+                self?.refreshView()
+            })
             return
         }
         updateDataSource(on: filteredBirds)
