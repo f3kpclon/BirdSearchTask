@@ -9,13 +9,14 @@ import UIKit
 
 class ZoomBirdVC: UIViewController {
     private let scrollView = BirdsViewBuilder.createScrollView()
-    private let zoomBirdImage = BirdsViewBuilder.createImageWith(image: Constants.Images.imgPlaceholder, contentMode: .scaleAspectFill, clipToBounds: true)
+    private let zoomBirdImage = BirdsViewBuilder.createImageWith(image: Constants.Images.imgPlaceholder, contentMode: .scaleAspectFit, clipToBounds: true)
     private let headerView = BirdsViewBuilder.createView()
     private let headerTitle = BirdsViewBuilder.createLabel(color: .black, text: "TITULO", alignment: .center, font: .boldSystemFont(ofSize: 24.0), bgColor: nil)
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 
     private var birdZoomViewModel : BirdZoomViewModel
     private var birdModel : BirdsListModel
+    private var viewContainer = BirdsViewBuilder.createView()
     
     init(birdZoomViewModel: BirdZoomViewModel, birdModel: BirdsListModel) {
         self.birdModel = birdModel
@@ -29,6 +30,9 @@ class ZoomBirdVC: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    deinit {
+        print("Vista eliminada: \(self)")
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,7 +69,8 @@ class ZoomBirdVC: UIViewController {
         func setUPView()  {
             headerView.addSubViews(headerTitle)
             view.addSubViews(headerView, scrollView)
-            scrollView.addSubViews(zoomBirdImage)
+            viewContainer.addSubViews(zoomBirdImage)
+            scrollView.addSubViews(viewContainer)
             
         }
         func setUpScrollView()  {
@@ -88,16 +93,21 @@ class ZoomBirdVC: UIViewController {
                 scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
                 
-                zoomBirdImage.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                zoomBirdImage.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-                zoomBirdImage.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-                zoomBirdImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-                zoomBirdImage.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+                viewContainer.topAnchor.constraint(equalTo: scrollView.topAnchor),
+                viewContainer.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                viewContainer.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+                viewContainer.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+                viewContainer.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+                zoomBirdImage.topAnchor.constraint(equalTo: viewContainer.topAnchor),
+                
+                zoomBirdImage.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor),
+                zoomBirdImage.trailingAnchor.constraint(equalTo: viewContainer.trailingAnchor),
+                zoomBirdImage.bottomAnchor.constraint(equalTo: viewContainer.bottomAnchor)
             ])
         }
     }
 extension ZoomBirdVC: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return zoomBirdImage
+        return viewContainer
     }
 }

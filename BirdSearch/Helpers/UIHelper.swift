@@ -11,6 +11,8 @@ struct UIHelper {
         let width = view.bounds.width
         let flowLayaout            = UICollectionViewFlowLayout()
         flowLayaout.itemSize       = CGSize(width: width, height: 100)
+        flowLayaout.minimumLineSpacing = 0.0
+        flowLayaout.minimumInteritemSpacing = 0.0
         return flowLayaout
     }
 }
