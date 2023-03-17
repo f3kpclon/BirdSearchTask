@@ -1,53 +1,77 @@
 import UIKit
-
+import Combine
 class BirdSearchVC: UIViewController {
-    var birdListViewModel : BirdListViewModel?
-    var collectionView : UICollectionView!
+    var birdListViewModel = BirdListViewModel()
+    lazy var collectionView : UICollectionView = {
+    let collection = UICollectionView(frame: .zero, collectionViewLayout: UIHelper.createSingleColumnFlowLayout(in: view))
+      return collection
+  }()
     var dataSource : UICollectionViewDiffableDataSource<Constants.Section,BirdsListModel>?
     var filteredBirds : [BirdsListModel] = []
     var birds : [BirdsListModel] = []
     var isSearching = false
     var isLoading = false
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+    private var cancelBag = Set<AnyCancellable>()
     
-    init(birdListViewModel: BirdListViewModel) {
-        self.birdListViewModel = birdListViewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
-        addActivityindicator()
         getListOfBirds()
-        configSearchController()
-        configCollection()
-        configDataSource()
-        birdListViewModel.connectCallback { [weak self] state in
-            self?.stateManager(state: state)
-        }
     }
     
     required init?(coder: NSCoder) {
         fatalError()
     }
-    
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    view.addSubViews(
+      activityIndicator,
+      collectionView
+    )
+    configSearchController()
+    view.sendSubviewToBack(collectionView)
+    collectionView.delegate = self
+    collectionView.register(BirdCell.self, forCellWithReuseIdentifier: BirdCell.reuseId)
+  }
+
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
+    // activity indicator
+    NSLayoutConstraint.activate([
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+    ])
+
+    // collectcionView
+    NSLayoutConstraint.activate([
+        collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+    ])
+  }
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    birdListViewModel.$birdsList.sink { [weak self] birdsListModel in
+      self?.updateDataUI(birdModel: birdsListModel)
+    }
+    .store(in: &cancelBag)
+  }
+
     func getListOfBirds()  {
         Task {
-            await birdListViewModel?.getBirds()
+          await birdListViewModel.getBirdsData()
         }
     }
-    
-    func stateManager(state: BirdsListViewModelState)  {
-        switch state {
-        case .loaded(model: let model):
-            activityIndicator.stopAnimating()
-            updateDataUI(birdModel: model)
-        case .loading:
-            activityIndicator.startAnimating()
-        case .loadedError(error: let error):
-            print(error.rawValue)
-        }
-    }
+
     func updateDataUI(birdModel : [BirdsListModel])  {
         self.birds.append(contentsOf: birdModel)
+        configDataSource()
         updateDataSource(on: self.birds)
     }
+
     func refreshView()  {
         birds.removeAll()
         filteredBirds.removeAll()
@@ -59,28 +83,7 @@ class BirdSearchVC: UIViewController {
 
 ///UIFunctions
 private extension BirdSearchVC {
-    
-    func addActivityindicator()  {
-        view.addSubViews(activityIndicator)
-        NSLayoutConstraint.activate([
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-    }
-    func configCollection()  {
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: UIHelper.createSingleColumnFlowLayout(in: view))
-        view.addSubViews(collectionView)
-        view.sendSubviewToBack(collectionView)
-        collectionView.delegate = self
-        collectionView.backgroundColor = .systemBackground
-        collectionView.register(BirdCell.self, forCellWithReuseIdentifier: BirdCell.reuseId)
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-    }
+
     func configSearchController() {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self

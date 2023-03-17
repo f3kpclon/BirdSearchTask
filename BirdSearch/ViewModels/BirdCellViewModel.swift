@@ -63,6 +63,7 @@ struct BirdCellModelVM {
         birdCellModel.spanishName ?? ""
     }
 }
+
 extension BirdCellModelVM : Hashable {
     static func == (lhs: BirdCellModelVM, rhs: BirdCellModelVM) -> Bool {
         lhs.uid == rhs.uid

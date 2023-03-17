@@ -6,33 +6,38 @@
 //
 
 import Foundation
-enum BirdsListViewModelState: Equatable {
-    case loaded(model: [BirdsListModel])
-    case loading
-    case loadedError(error: BirdsErrors)
-}
+
 @MainActor
-class BirdListViewModel {
-    var birds = [BirdsListModel]()
-    var state : BirdsListViewModelState = .loading {
-        didSet {
-            refreshBirdsViewModel?(state)
-        }
-    }
-    var refreshBirdsViewModel : ((BirdsListViewModelState) -> Void)?
+class BirdListViewModel: ObservableObject {
+    @Published var birdsList = [BirdsListModel]()
+    private let manager = AsyncPublisherManager()
+
+  init() {
     
-    func getBirds() async {
-        do {
-            state = .loading
-            let dataBirds = try await BirdsService.shared.getAllBirds()
-            self.birds = dataBirds.map(BirdsListModel.init)
-            state = .loaded(model: birds)
-        } catch  {
-            state = .loadedError(error: .invalidData)
-        }
+    addSubscriber()
+  }
+
+  private func addSubscriber() {
+    Task {
+      for await value in await manager.$data.values {
+        self.birdsList = value
+      }
     }
-    func connectCallback(callback: @escaping (BirdsListViewModelState) -> Void) {
-        self.refreshBirdsViewModel = callback
-   }
+  }
+  func getBirdsData() async {
+    await manager.getBirdsData()
+  }
 }
 
+actor AsyncPublisherManager {
+  @Published var data : [BirdsListModel] = []
+  func getBirdsData() async {
+      do {
+          let dataBirds = try await BirdsService.shared.getAllBirds()
+          self.data = dataBirds.map(BirdsListModel.init)
+      } catch  {
+          print(error)
+      }
+  }
+
+}

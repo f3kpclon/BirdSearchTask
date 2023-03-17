@@ -11,8 +11,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let scene = (scene as? UIWindowScene) else { return }
 
     let window = UIWindow(windowScene: scene)
-    let viewModel = BirdListViewModel()
-    window.rootViewController = UINavigationController(rootViewController: BirdSearchVC(birdListViewModel: viewModel))
+    window.rootViewController = UINavigationController(rootViewController: BirdSearchVC())
     window.makeKeyAndVisible()
     self.window = window
   }
