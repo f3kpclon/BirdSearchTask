@@ -1,7 +1,7 @@
 import UIKit
 import Combine
 class BirdSearchVC: UIViewController {
-    var birdListViewModel = BirdListViewModel()
+    var birdListViewModel = BirdListViewModel(dataManager: BirdsDataManager())
     lazy var collectionView : UICollectionView = {
     let collection = UICollectionView(frame: .zero, collectionViewLayout: UIHelper.createSingleColumnFlowLayout(in: view))
       return collection
@@ -13,6 +13,7 @@ class BirdSearchVC: UIViewController {
     var isLoading = false
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     private var cancelBag = Set<AnyCancellable>()
+    private var task: Task<Void, Never>?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -59,9 +60,17 @@ class BirdSearchVC: UIViewController {
     }
     .store(in: &cancelBag)
   }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    cancelBag.removeAll()
+    task?.cancel()
+    task = nil
+  }
 
     func getListOfBirds()  {
-        Task {
+        task?.cancel()
+        task = Task {
           await birdListViewModel.getBirdsData()
         }
     }

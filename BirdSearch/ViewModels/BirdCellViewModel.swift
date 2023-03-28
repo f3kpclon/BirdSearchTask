@@ -9,43 +9,37 @@ import Foundation
 import CoreText
 import UIKit
 
-enum BirdCellState: Equatable {
-    case loaded(model: BirdCellModelVM)
-    case loading
-    case loadedWithError(error: BirdsErrors)
-}
 @MainActor
-class BirdCellViewModel {
-    var birdCell : BirdCellModelVM?
-    var refreshCellViewModel : ((BirdCellState) -> Void)?
-    var state : BirdCellState = .loading {
-        didSet {
-            refreshCellViewModel?(state)
+class BirdCellViewModel: ObservableObject {
+    @Published var birdCell: BirdCellModelVM?
+    private let dataManager: BirdsDataManager
+    private var task: Task<Void, Never>?
+
+    init(dataManager: BirdsDataManager) {
+        self.dataManager = dataManager
+        addSubscriber()
+    }
+
+    deinit {
+        task?.cancel()
+    }
+
+    private func addSubscriber()  {
+        task = Task {
+            for await value in await dataManager.$cellData.values {
+                self.birdCell = value
+            }
         }
     }
-    func getCellData(url: String, birdModel: BirdsListModel) async {
-        do {
-            state = .loading
-            let birdImage = try await BirdsService.shared.downloadImage(from: url)
-            guard let birdImage = birdImage else { return }
-            self.birdCell = BirdCellModelVM(birdCellModel: BirdCellModel(uid: birdModel.index,
-                                                                         birdImage: birdImage,
-                                                                         titleName: birdModel.birdLatinName,
-                                                                         englishName: birdModel.birdEnglishName,
-                                                                         spanishName: birdModel.birdSpanishName))
-            guard let birdCell = birdCell else { return }
-            state = .loaded(model: birdCell)
-        } catch  {
-            state = .loadedWithError(error: BirdsErrors.invalidData)
-        }
+
+    func getBirdsCellData(url: String, birdModel: BirdsListModel) async throws {
+        try await dataManager.getCellData(url: url, birdModel: birdModel)
     }
-    func connectCallback(callback: @escaping (BirdCellState) -> Void) {
-        self.refreshCellViewModel = callback
-   }
 }
 
+
 struct BirdCellModelVM {
-    fileprivate let birdCellModel : BirdCellModel
+    let birdCellModel : BirdCellModel
     
     var uid : Int {
         birdCellModel.uid
