@@ -9,15 +9,16 @@ import Foundation
 import UIKit
 
 struct BirdZoomModel {
-    let uid : Int
-    let title : String
-    let zoomImage : UIImage
+    let uid: Int
+    let title: String
+    let zoomImage: UIImage
 }
-extension BirdZoomModel : Hashable {
+
+extension BirdZoomModel: Hashable {
     static func == (lhs: BirdZoomModel, rhs: BirdZoomModel) -> Bool {
         lhs.uid == rhs.uid
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(uid)
     }

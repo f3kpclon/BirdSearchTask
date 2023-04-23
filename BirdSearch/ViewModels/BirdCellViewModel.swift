@@ -5,8 +5,8 @@
 //  Created by Felix Alexander Sotelo Quezada on 19-08-22.
 //
 
-import Foundation
 import CoreText
+import Foundation
 import UIKit
 
 @MainActor
@@ -24,7 +24,7 @@ class BirdCellViewModel: ObservableObject {
         task?.cancel()
     }
 
-    private func addSubscriber()  {
+    private func addSubscriber() {
         task = Task {
             for await value in await dataManager.$cellData.values {
                 self.birdCell = value
@@ -37,32 +37,35 @@ class BirdCellViewModel: ObservableObject {
     }
 }
 
-
 struct BirdCellModelVM {
-    let birdCellModel : BirdCellModel
-    
-    var uid : Int {
+    let birdCellModel: BirdCellModel
+
+    var uid: Int {
         birdCellModel.uid
     }
-    var birdImage : UIImage {
+
+    var birdImage: UIImage {
         birdCellModel.birdImage
     }
-    var titleName : String {
+
+    var titleName: String {
         birdCellModel.titleName ?? ""
     }
-    var englishName : String {
+
+    var englishName: String {
         birdCellModel.englishName ?? ""
     }
-    var spanishName : String {
+
+    var spanishName: String {
         birdCellModel.spanishName ?? ""
     }
 }
 
-extension BirdCellModelVM : Hashable {
+extension BirdCellModelVM: Hashable {
     static func == (lhs: BirdCellModelVM, rhs: BirdCellModelVM) -> Bool {
         lhs.uid == rhs.uid
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(uid)
     }

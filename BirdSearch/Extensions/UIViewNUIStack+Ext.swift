@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIView {
-    func addSubViews(_ views: UIView...)  {
+    func addSubViews(_ views: UIView...) {
         for view in views {
             view.translatesAutoresizingMaskIntoConstraints = false
             addSubview(view)
@@ -17,7 +17,7 @@ extension UIView {
 }
 
 extension UIStackView {
-    func addStacks(_ views: UIView...)  {
+    func addStacks(_ views: UIView...) {
         for view in views {
             view.translatesAutoresizingMaskIntoConstraints = false
             addArrangedSubview(view)

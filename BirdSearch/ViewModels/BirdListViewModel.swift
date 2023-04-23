@@ -25,8 +25,9 @@ class BirdListViewModel: ObservableObject {
 
     private func addSubscriber() {
         task = Task { [weak self] in
-            for await value in await dataManager.$data.values {
-                self?.birdsList = value
+            guard let self else { return }
+            for await value in await self.dataManager.$data.values {
+                self.birdsList = value
             }
         }
     }
@@ -47,7 +48,7 @@ actor BirdsDataManager {
 
     func getBirdsData() async throws {
         let dataBirds = try await BirdsService.shared.getAllBirds()
-        self.data = dataBirds.map(BirdsListModel.init)
+        data = dataBirds.map(BirdsListModel.init)
     }
 
     func getCellData(url: String, birdModel: BirdsListModel) async throws {
@@ -55,7 +56,7 @@ actor BirdsDataManager {
             return
         }
 
-        self.cellData = BirdCellModelVM(
+        cellData = BirdCellModelVM(
             birdCellModel: BirdCellModel(
                 uid: birdModel.index,
                 birdImage: birdImage,

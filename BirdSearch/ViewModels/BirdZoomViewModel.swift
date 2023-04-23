@@ -12,15 +12,17 @@ enum BirdZoomstate: Equatable {
     case loading
     case loadedWithError(error: BirdsErrors)
 }
+
 @MainActor
 class BirdZoomViewModel {
-    var birdZoom : BirdZoomModel?
-    var refreshCellViewModel : ((BirdZoomstate) -> Void)?
-    var state : BirdZoomstate = .loading {
+    var birdZoom: BirdZoomModel?
+    var refreshCellViewModel: ((BirdZoomstate) -> Void)?
+    var state: BirdZoomstate = .loading {
         didSet {
             refreshCellViewModel?(state)
         }
     }
+
     func getBirdZoomData(url: String, birdModel: BirdsListModel) async {
         do {
             state = .loading
@@ -30,12 +32,13 @@ class BirdZoomViewModel {
                                           title: birdModel.birdSpanishName,
                                           zoomImage: birdImage)
             guard let birdZoom = birdZoom else { return }
-            state = .loaded(model: birdZoom )
-        } catch  {
+            state = .loaded(model: birdZoom)
+        } catch {
             state = .loadedWithError(error: BirdsErrors.invalidData)
         }
     }
+
     func connectCallback(callback: @escaping (BirdZoomstate) -> Void) {
-        self.refreshCellViewModel = callback
-   }
+        refreshCellViewModel = callback
+    }
 }

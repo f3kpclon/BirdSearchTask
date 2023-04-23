@@ -11,6 +11,6 @@ extension UICollectionViewDiffableDataSource {
     /// - Parameters:
     ///   - completion: A closure to be called on completion of reapplying the snapshot.
     func refresh(completion: (() -> Void)? = nil) {
-        self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
+        apply(snapshot(), animatingDifferences: true, completion: completion)
     }
 }

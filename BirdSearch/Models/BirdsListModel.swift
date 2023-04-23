@@ -8,26 +8,32 @@
 import Foundation
 
 struct BirdsListModel {
-    let birdModel : BirdsModel
-    var uid : String {
+    let birdModel: BirdsModel
+    var uid: String {
         birdModel.uid
     }
-    var birdThumb : String {
+
+    var birdThumb: String {
         birdModel.images.thumb
     }
-    var birdFull : String {
+
+    var birdFull: String {
         birdModel.images.full
     }
-    var birdLatinName : String {
+
+    var birdLatinName: String {
         birdModel.name.latin
     }
-    var birdEnglishName : String {
+
+    var birdEnglishName: String {
         birdModel.name.english
     }
-    var birdSpanishName : String {
+
+    var birdSpanishName: String {
         birdModel.name.spanish
     }
-    var index : Int {
+
+    var index: Int {
         birdModel.sort
     }
 }
@@ -36,7 +42,7 @@ extension BirdsListModel: Hashable {
     static func == (lhs: BirdsListModel, rhs: BirdsListModel) -> Bool {
         lhs.uid == rhs.uid
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(uid)
     }
