@@ -27,7 +27,7 @@ class BirdsService {
             throw BirdsErrors.invalidResponse
         }
 
-        guard let bird = try? try decoder.decode([BirdsModel].self, from: await birdData) else {
+        guard let bird = try? decoder.decode([BirdsModel].self, from: await birdData) else {
             throw BirdsErrors.invalidData
         }
         return bird
@@ -45,6 +45,32 @@ class BirdsService {
             return image
         } catch {
             return nil
+        }
+    }
+
+    func getBirdsWithImage() async throws -> [BirdCellModel] {
+        let birds = try await getAllBirds()
+
+        return try await withThrowingTaskGroup(of: BirdCellModel.self) { group in
+            var birdsModel = [BirdCellModel]()
+            for bird in birds {
+                group.addTask {
+                    let image = try await self.downloadImage(from: bird.images.thumb)!
+                    let birdModel = BirdCellModel(
+                        uid: bird.uid,
+                        birdImage: image,
+                        titleName: bird.name.latin,
+                        englishName: bird.name.english,
+                        spanishName: bird.name.spanish
+                    )
+                    return birdModel
+                }
+            }
+
+            for try await bird in group {
+                birdsModel.append(bird)
+            }
+            return birdsModel
         }
     }
 }

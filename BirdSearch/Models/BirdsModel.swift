@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BirdsModel: Codable, Hashable {
+struct BirdsModel: Codable {
     let uid: String
     let name: BirdsName
     let images: BirdsImage
@@ -23,4 +23,14 @@ struct BirdsName: Codable, Hashable {
 struct BirdsImage: Codable, Hashable {
     let thumb: String
     let full: String
+}
+
+extension BirdsModel: Hashable {
+    static func == (lhs: BirdsModel, rhs: BirdsModel) -> Bool {
+        lhs.uid == rhs.uid
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(uid)
+    }
 }

@@ -22,12 +22,10 @@
 		31BF22CB28B04494003B02C2 /* BirdsListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22CA28B04494003B02C2 /* BirdsListModel.swift */; };
 		31BF22CD28B0565F003B02C2 /* BirdCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22CC28B0565F003B02C2 /* BirdCell.swift */; };
 		31BF22CF28B05C24003B02C2 /* UIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22CE28B05C24003B02C2 /* UIHelper.swift */; };
-		31BF22D128B05D13003B02C2 /* BirdCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22D028B05D13003B02C2 /* BirdCellViewModel.swift */; };
 		31BF22D328B12EDB003B02C2 /* BirdCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22D228B12EDB003B02C2 /* BirdCellModel.swift */; };
 		31BF22D528B15204003B02C2 /* BirdsViewBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22D428B15204003B02C2 /* BirdsViewBuilder.swift */; };
 		31BF22D728B1AA7D003B02C2 /* ZoomBirdVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22D628B1AA7D003B02C2 /* ZoomBirdVC.swift */; };
 		31BF22D928B287A1003B02C2 /* BirdZoomModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22D828B287A1003B02C2 /* BirdZoomModel.swift */; };
-		31BF22DB28B2887B003B02C2 /* BirdZoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22DA28B2887A003B02C2 /* BirdZoomViewModel.swift */; };
 		31BF22DD28B290E3003B02C2 /* UIDiffableDataSource+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31BF22DC28B290E3003B02C2 /* UIDiffableDataSource+Ext.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,12 +47,10 @@
 		31BF22CA28B04494003B02C2 /* BirdsListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdsListModel.swift; sourceTree = "<group>"; };
 		31BF22CC28B0565F003B02C2 /* BirdCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdCell.swift; sourceTree = "<group>"; };
 		31BF22CE28B05C24003B02C2 /* UIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelper.swift; sourceTree = "<group>"; };
-		31BF22D028B05D13003B02C2 /* BirdCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdCellViewModel.swift; sourceTree = "<group>"; };
 		31BF22D228B12EDB003B02C2 /* BirdCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdCellModel.swift; sourceTree = "<group>"; };
 		31BF22D428B15204003B02C2 /* BirdsViewBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdsViewBuilder.swift; sourceTree = "<group>"; };
 		31BF22D628B1AA7D003B02C2 /* ZoomBirdVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomBirdVC.swift; sourceTree = "<group>"; };
 		31BF22D828B287A1003B02C2 /* BirdZoomModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdZoomModel.swift; sourceTree = "<group>"; };
-		31BF22DA28B2887A003B02C2 /* BirdZoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdZoomViewModel.swift; sourceTree = "<group>"; };
 		31BF22DC28B290E3003B02C2 /* UIDiffableDataSource+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDiffableDataSource+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,8 +129,6 @@
 			isa = PBXGroup;
 			children = (
 				31BF22C828B04431003B02C2 /* BirdListViewModel.swift */,
-				31BF22D028B05D13003B02C2 /* BirdCellViewModel.swift */,
-				31BF22DA28B2887A003B02C2 /* BirdZoomViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -259,8 +253,6 @@
 				2DB8FA1C28AD40F900DF01CC /* BirdSearchVC.swift in Sources */,
 				31BF22D728B1AA7D003B02C2 /* ZoomBirdVC.swift in Sources */,
 				2DB8FA1828AD40F900DF01CC /* AppDelegate.swift in Sources */,
-				31BF22D128B05D13003B02C2 /* BirdCellViewModel.swift in Sources */,
-				31BF22DB28B2887B003B02C2 /* BirdZoomViewModel.swift in Sources */,
 				31BF22BF28B03B25003B02C2 /* UIViewController+Ext.swift in Sources */,
 				31BF22BD28B03AB3003B02C2 /* BirdsErrors.swift in Sources */,
 				2DB8FA1A28AD40F900DF01CC /* SceneDelegate.swift in Sources */,

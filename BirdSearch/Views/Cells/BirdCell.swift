@@ -12,7 +12,6 @@ class BirdCell: UICollectionViewCell {
     private var cancelBag = Set<AnyCancellable>()
     private let usflag: Character = "\u{1F1FA}\u{1F1F8}"
     private let clFlag: Character = "\u{1F1E8}\u{1F1F1}"
-    private var birdCellViewModel = BirdCellViewModel(dataManager: BirdsDataManager())
     private let spanishNameLbl = BirdsViewBuilder.createLabel(color: nil, text: "TESTING", alignment: .left, font: .boldSystemFont(ofSize: 15.0), bgColor: nil)
     private let englishNameLbl = BirdsViewBuilder.createLabel(color: nil, text: "TESTING2", alignment: .left, font: .boldSystemFont(ofSize: 15.0), bgColor: nil)
     private let nameTitleLbl = BirdsViewBuilder.createLabel(color: nil, text: "TESTING3", alignment: .left, font: .italicSystemFont(ofSize: 12.0), bgColor: nil)
@@ -51,21 +50,6 @@ class BirdCell: UICollectionViewCell {
         ])
     }
 
-    override func didAddSubview(_ subview: UIView) {
-        super.didAddSubview(subview)
-        birdCellViewModel.$birdCell
-            .compactMap { $0 }
-            .sink { [weak self] cellModel in
-                self?.updateContent(cellModel)
-            }
-            .store(in: &cancelBag)
-    }
-
-    override func willRemoveSubview(_ subview: UIView) {
-        super.willRemoveSubview(subview)
-        cancelBag.removeAll()
-    }
-
     override func prepareForReuse() {
         super.prepareForReuse()
         task?.cancel()
@@ -76,17 +60,7 @@ class BirdCell: UICollectionViewCell {
         avatarImg.image = nil
     }
 
-    func setBirdCell(birdModel: BirdsListModel) {
-        task = Task {
-            do {
-                try await birdCellViewModel.getBirdsCellData(url: birdModel.birdThumb, birdModel: birdModel)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
-
-    func updateContent(_ model: BirdCellModelVM) {
+    func updateContent(_ model: BirdCellModel) {
         nameTitleLbl.text = model.titleName
         spanishNameLbl.text = "\(clFlag)  \(model.spanishName)"
         englishNameLbl.text = "\(usflag)  \(model.englishName)"

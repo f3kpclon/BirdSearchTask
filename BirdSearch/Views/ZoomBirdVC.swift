@@ -9,23 +9,17 @@ import UIKit
 
 class ZoomBirdVC: UIViewController {
     private let scrollView = BirdsViewBuilder.createScrollView()
-    private let zoomBirdImage = BirdsViewBuilder.createImageWith(image: Constants.Images.imgPlaceholder, contentMode: .scaleAspectFit, clipToBounds: true)
+    private lazy var zoomBirdImage = BirdsViewBuilder.createImageWith(image: birdModel.birdImage, contentMode: .scaleAspectFit, clipToBounds: true)
     private let headerView = BirdsViewBuilder.createView()
     private let headerTitle = BirdsViewBuilder.createLabel(color: .black, text: "TITULO", alignment: .center, font: .boldSystemFont(ofSize: 24.0), bgColor: nil)
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 
-    private var birdZoomViewModel: BirdZoomViewModel
-    private var birdModel: BirdsListModel
+    private var birdModel: BirdCellModel
     private var viewContainer = BirdsViewBuilder.createView()
 
-    init(birdZoomViewModel: BirdZoomViewModel, birdModel: BirdsListModel) {
+    init(birdModel: BirdCellModel) {
         self.birdModel = birdModel
-        self.birdZoomViewModel = birdZoomViewModel
         super.init(nibName: nil, bundle: nil)
-        getBirdFullImage()
-        birdZoomViewModel.connectCallback { [weak self] state in
-            self?.stateManager(state: state)
-        }
     }
 
     @available(*, unavailable)
@@ -43,25 +37,7 @@ class ZoomBirdVC: UIViewController {
         setUPView()
         setUpScrollView()
         setConstraints()
-    }
-
-    func getBirdFullImage() {
-        Task {
-            await birdZoomViewModel.getBirdZoomData(url: birdModel.birdFull, birdModel: birdModel)
-        }
-    }
-
-    func stateManager(state: BirdZoomstate) {
-        switch state {
-        case let .loaded(model: model):
-            activityIndicator.stopAnimating()
-            zoomBirdImage.image = model.zoomImage
-            headerTitle.text = model.title
-        case .loading:
-            activityIndicator.startAnimating()
-        case .loadedWithError(error: _):
-            activityIndicator.stopAnimating()
-        }
+        headerTitle.text = birdModel.titleName
     }
 
     func addActivityindicator() {

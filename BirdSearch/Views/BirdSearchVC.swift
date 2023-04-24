@@ -7,9 +7,9 @@ class BirdSearchVC: UIViewController {
         return collection
     }()
 
-    var dataSource: UICollectionViewDiffableDataSource<Constants.Section, BirdsListModel>?
-    var filteredBirds: [BirdsListModel] = []
-    var birds: [BirdsListModel] = []
+    var dataSource: UICollectionViewDiffableDataSource<Constants.Section, BirdCellModel>?
+    var filteredBirds: [BirdCellModel] = []
+    var birds: [BirdCellModel] = []
     var isSearching = false
     var isLoading = false
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
@@ -18,7 +18,6 @@ class BirdSearchVC: UIViewController {
 
     init() {
         super.init(nibName: nil, bundle: nil)
-        getListOfBirds()
     }
 
     @available(*, unavailable)
@@ -58,11 +57,21 @@ class BirdSearchVC: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        birdListViewModel.$birdsList
+        activityIndicator.startAnimating()
+        birdListViewModel.birds
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] birdsListModel in
-                self?.updateDataUI(birdModel: birdsListModel)
-            }
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    self.activityIndicator.stopAnimating()
+                    print("Stream finished")
+                case let .failure(error):
+                    print("Stream failed with error: \(error)")
+                }
+            }, receiveValue: { birds in
+                self.updateDataUI(birdModel: birds)
+
+            })
             .store(in: &cancelBag)
     }
 
@@ -73,25 +82,17 @@ class BirdSearchVC: UIViewController {
         task = nil
     }
 
-    func getListOfBirds() {
-        task?.cancel()
-        task = Task {
-            await birdListViewModel.getBirdsData()
-        }
-    }
-
-    func updateDataUI(birdModel: [BirdsListModel]) {
+    func updateDataUI(birdModel: [BirdCellModel]) {
         birds.append(contentsOf: birdModel)
+        birds.sort(by: { $0.uid > $1.uid })
         configDataSource()
         updateDataSource(on: birds)
     }
 
     func refreshView() {
-        birds.removeAll()
         filteredBirds.removeAll()
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
         updateDataSource(on: birds)
-        getListOfBirds()
     }
 }
 
@@ -106,8 +107,8 @@ private extension BirdSearchVC {
         navigationItem.searchController = searchController
     }
 
-    func updateDataSource(on birds: [BirdsListModel]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Constants.Section, BirdsListModel>()
+    func updateDataSource(on birds: [BirdCellModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Constants.Section, BirdCellModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(birds, toSection: .main)
         DispatchQueue.main.async {
@@ -116,12 +117,18 @@ private extension BirdSearchVC {
     }
 
     func configDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Constants.Section, BirdsListModel>(collectionView: collectionView, cellProvider: { collectionView, indexPath, bird -> UICollectionViewCell? in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BirdCell.reuseId, for: indexPath) as? BirdCell
-            guard let strongCell = cell else { return UICollectionViewCell() }
-            strongCell.setBirdCell(birdModel: bird)
-            return strongCell
-        })
+        dataSource = UICollectionViewDiffableDataSource<Constants.Section, BirdCellModel>(
+            collectionView: collectionView,
+            cellProvider: {
+                collectionView,
+                    indexPath,
+                    bird -> UICollectionViewCell? in
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BirdCell.reuseId, for: indexPath) as? BirdCell
+                guard let strongCell = cell else { return UICollectionViewCell() }
+                strongCell.updateContent(bird)
+                return strongCell
+            }
+        )
     }
 }
 
@@ -135,7 +142,7 @@ extension BirdSearchVC: UISearchBarDelegate, UISearchResultsUpdating {
         }
         isSearching = true
         filteredBirds = birds.filter { birdModel -> Bool in
-            birdModel.birdSpanishName.lowercased().contains(filter)
+            birdModel.spanishName.lowercased().contains(filter)
         }
         guard filteredBirds.count != 0 else {
             showAlertOnMainThread(title: "OOPS!!!", message: "No bird named \(filter) was found, try again")
@@ -169,8 +176,7 @@ extension BirdSearchVC: UICollectionViewDelegate {
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let activeArray = isSearching ? filteredBirds : birds
         let bird = activeArray[indexPath.item]
-        let viewModel = BirdZoomViewModel()
-        let birdZoomVC = ZoomBirdVC(birdZoomViewModel: viewModel, birdModel: bird)
+        let birdZoomVC = ZoomBirdVC(birdModel: bird)
         birdZoomVC.modalPresentationStyle = .popover
         present(birdZoomVC, animated: true)
     }
