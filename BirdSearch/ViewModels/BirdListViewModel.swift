@@ -41,8 +41,6 @@ class BirdListViewModel {
     deinit {
         task?.cancel()
     }
-
-    func getBirds() {}
 }
 
 actor BirdsDataManager {

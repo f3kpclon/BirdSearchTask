@@ -12,7 +12,6 @@ class ZoomBirdVC: UIViewController {
     private lazy var zoomBirdImage = BirdsViewBuilder.createImageWith(image: birdModel.birdImage, contentMode: .scaleAspectFit, clipToBounds: true)
     private let headerView = BirdsViewBuilder.createView()
     private let headerTitle = BirdsViewBuilder.createLabel(color: .black, text: "TITULO", alignment: .center, font: .boldSystemFont(ofSize: 24.0), bgColor: nil)
-    let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 
     private var birdModel: BirdCellModel
     private var viewContainer = BirdsViewBuilder.createView()
@@ -39,15 +38,7 @@ class ZoomBirdVC: UIViewController {
         setConstraints()
         headerTitle.text = birdModel.titleName
     }
-
-    func addActivityindicator() {
-        view.addSubViews(activityIndicator)
-        NSLayoutConstraint.activate([
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
-    }
-
+  
     func setUPView() {
         headerView.addSubViews(headerTitle)
         view.addSubViews(headerView, scrollView)

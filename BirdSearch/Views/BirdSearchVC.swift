@@ -14,16 +14,6 @@ class BirdSearchVC: UIViewController {
     var isLoading = false
     let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     private var cancelBag = Set<AnyCancellable>()
-    private var task: Task<Void, Never>?
-
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError()
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,8 +68,6 @@ class BirdSearchVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         cancelBag.removeAll()
-        task?.cancel()
-        task = nil
     }
 
     func updateDataUI(birdModel: [BirdCellModel]) {

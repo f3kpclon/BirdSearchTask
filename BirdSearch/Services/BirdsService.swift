@@ -18,7 +18,7 @@ class BirdsService {
         decoder.dateDecodingStrategy = .iso8601
     }
 
-    func getAllBirds() async throws -> [BirdsModel] {
+  func getAllBirds<T: Decodable>(for: T.Type) async throws -> T {
         let url = Constants.BirdsURL.apiURL
         guard let apiUrl = URL(string: url) else { throw BirdsErrors.badURl }
         async let (birdData, response) = URLSession.shared.data(from: apiUrl)
@@ -27,7 +27,7 @@ class BirdsService {
             throw BirdsErrors.invalidResponse
         }
 
-        guard let bird = try? decoder.decode([BirdsModel].self, from: await birdData) else {
+        guard let bird = try? decoder.decode(T.self, from: await birdData) else {
             throw BirdsErrors.invalidData
         }
         return bird
@@ -49,8 +49,7 @@ class BirdsService {
     }
 
     func getBirdsWithImage() async throws -> [BirdCellModel] {
-        let birds = try await getAllBirds()
-
+      let birds = try await getAllBirds(for: [BirdsModel].self)
         return try await withThrowingTaskGroup(of: BirdCellModel.self) { group in
             var birdsModel = [BirdCellModel]()
             for bird in birds {
